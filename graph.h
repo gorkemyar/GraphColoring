@@ -15,11 +15,13 @@
 using namespace std;
 
 template <class type>
+struct edge;
+template <class type>
 struct node{
     type word;
-    list<edge> adjacent;
+    list< edge<type> > adjacent;
     string color;
-    node(type w, node* n=nullptr, string c="white"): word(w), next(n), color(c) {};
+    node(type w, string c="white"): word(w), color(c) {};
     node<type>* path = nullptr;
 };
 
@@ -203,9 +205,9 @@ bool Graph<type>::deleteNode(type word){
     if (n != nullptr){
         for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
             deleteEdge(n->word, it->to->word);
-            if checkEdge(it->to->word, n->word){
-                deleteEdge(it->to->word, n->word);
-            }
+            // if (checkEdge(it->to->word, n->word)){
+            //     deleteEdge(it->to->word, n->word);
+            // }
         }
         map.erase(word);
         for (int i=0; i<vertexes.size(); i++){
@@ -290,7 +292,7 @@ void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<typ
         addNode(obj);
     }
 
-    num_edges = max(num_edges, num_nodes-1)
+    num_edges = max(num_edges, num_nodes-1);
     for (int i=1; i<num_nodes; i++){
         int from = rand()%i;
         int to = rand()%num_nodes;

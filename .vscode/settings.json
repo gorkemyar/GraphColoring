@@ -1,5 +1,15 @@
 {
   "files.associations": {
-    "functional": "cpp"
+    "functional": "cpp",
+    "__debug": "cpp",
+    "compare": "cpp",
+    "type_traits": "cpp",
+    "ios": "cpp",
+    "istream": "cpp",
+    "memory": "cpp",
+    "ostream": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "stdexcept": "cpp"
   }
 }
