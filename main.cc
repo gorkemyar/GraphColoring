@@ -28,3 +28,9 @@ int main(){
 
     return 0;
 }
+
+
+// To run this code, compile it with:
+// g++ main.cc -o main -std=c++11
+// Then run it with:
+// ./main
