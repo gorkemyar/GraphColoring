@@ -1,6 +1,3 @@
-.SUFFIXES:
-.SUFFIXES: .o .cpp
-#============================================================
 TARGET	=  main
 
 C_SOURCES =  main.cpp
@@ -24,7 +21,6 @@ $(TARGET) :   $(C_OBJS)
 #============================================================
 
 ALL_SOURCES = makefile $(C_SOURCES) $(MY_INCLUDES)
-
 
 clean:
 	rm -f $(TARGET) $(C_OBJS) core *~
