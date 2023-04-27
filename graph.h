@@ -50,13 +50,20 @@ class Graph{
         void BFS(function<type(type)> func, type from);
         void DFS(function<type(type)> func, type from);
         void create_random_graph(int num_nodes, int num_edges, function<type(type)> random_generator);
+        bool check_coloring();
+        bool check_neighbors_coloring(node<type>* n, string color);
+        void print_coloring();
+        string generate_random_color();
+        //void color_graph_brute_force();
+
     private:
         unordered_map<type, node<type>*> map;
         vector<node<type>*> vertexes;
         unordered_set<node<type>*> visited;
-        unordered_set<node<type>*> colored;
 
+        unordered_set<string> colors;
         node<type>* findNode(type from);
+        string generate_random_color_helper();
         
 };
 
@@ -66,7 +73,7 @@ Graph<type>::Graph(){
     map.clear();
     vertexes.clear();
     visited.clear();
-    colored.clear();
+    colors.clear();
 }
 
 template <class type>
@@ -79,7 +86,7 @@ Graph<type>::~Graph(){
     map.clear();
     vertexes.clear();
     visited.clear();
-    colored.clear();
+    colors.clear();
 }
 
 template <class type>
@@ -197,7 +204,6 @@ bool Graph<type>::isConnected(){
     return false;
 }
 
-
 // there is a dangling pointer problem here if the edge is not undirected and points to the deleted node
 template <class type>
 bool Graph<type>::deleteNode(type word){
@@ -293,14 +299,123 @@ void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<typ
     }
 
     num_edges = max(num_edges, num_nodes-1);
-    for (int i=1; i<num_nodes; i++){
+    for (int i = 1; i < num_nodes; i++){
         int from = rand()%i;
+        int weight = rand()%100;
+        addEdgeUndirected(vertexes[from]->word, vertexes[i]->word, weight);
+    }
+
+    num_edges -= (num_nodes-1);
+    for (int i = 1; i < num_edges; i++){
+        int from = rand()%num_nodes;
         int to = rand()%num_nodes;
         int weight = rand()%100;
         addEdgeUndirected(vertexes[from]->word, vertexes[to]->word, weight);
     }
 }
 
+template <class type>
+bool Graph<type>::check_coloring(){
+    queue<node<type>*> q;
+    for (int i=0; i<vertexes.size(); i++){
+        if (visited.find(vertexes[i]) == visited.end()){
+            q.push(vertexes[i]);
+            visited.insert(vertexes[i]);
+            while (!q.empty()){
+                node<type>* n = q.front();
+                q.pop();
+                for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
+                    if (it->to->color == n->color){
+                        return false;
+                    }
+                    if (visited.find(it->to) == visited.end()){
+                        q.push(it->to);
+                        visited.insert(it->to);
+                    }
+                }
+            }
+        }
+    }
+    visited.clear();
+    return true;
+}
+
+template<class type>    
+bool Graph<type>::check_neighbors_coloring(node<type>* n, string c){
+    for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
+        if (it->to->color == c){
+            return false;
+        }
+    }
+    return true;
+}
+
+template <class type>
+void Graph<type>::print_coloring(){
+    
+    for (int i=0; i<vertexes.size(); i++){
+        cout << vertexes[i]->color << ": ";
+        for (auto it = vertexes[i]->adjacent.begin(); it != vertexes[i]->adjacent.end(); it++){
+            cout << it->to->color<< " ";
+        }
+        cout << endl;
+    }
+    
+}
+
+template <class type>
+string Graph<type>::generate_random_color_helper(){
+    string color = "#";
+    for (int i=0; i<6; i++){
+        int r = rand()%16;
+        if (r < 10){
+            color += to_string(r);
+        }
+        else{
+            color += (char)(r-10+'A');
+        }
+    }
+    return color;
+}
+
+template <class type>
+string Graph<type>::generate_random_color(){
+    string color = generate_random_color_helper();
+    while (colors.find(color) != colors.end()){
+        color = generate_random_color_helper();
+    }
+    return color;
+}
+
+// template <class type>
+// void Graph<type>::color_graph_brute_force(){
+//     static int colored_nodes = 0;
+//     static int min_colors = INT_MAX;
+//     if (colored_nodes == vertexes.size()){
+//         return;
+//     }
+
+//     for (int i=0; i<vertexes.size(); i++){
+//         if (vertexes[i]->color == ""){
+//             vertexes[i]->color = generate_random_color();
+//             colored_nodes++;
+//             if (check_coloring()){
+//                 color_graph_brute_force();
+//             }
+//             for (int j=0; j<vertexes.size(); j++){
+//                 if (i != j 
+//                     && !checkEdge(vertexes[i]->word, vertexes[j]->word) 
+//                     && vertexes[j]->color == ""
+//                     && check_neighbors_coloring(vertexes[j], vertexes[i]->color)){
+                    
+//                     vertexes[j]->color = vertexes[i]->color;
+//                     colored_nodes++;
+//                     color_graph_brute_force();
+//                 }
+//             }
+//         }
+//     }  
+// }
 
 
 #endif
