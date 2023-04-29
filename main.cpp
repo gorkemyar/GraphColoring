@@ -5,7 +5,7 @@
 using namespace std;
 
 int main(){
-    Graph<int> g;
+    // Graph<int> g;
     // g.addNode(1);
     // g.addNode(2);
     // g.addNode(3);
@@ -19,19 +19,53 @@ int main(){
     // g.addEdgeUndirected(3,4,1);
 
 
-    g.create_random_graph(30, 40, [](int i){return i;});
+    // Create a graph with 10 nodes and 20 random edges
+    Graph<int> g;
+    g.create_random_graph(10, 20, [](int i){ return i; });
+
+    // Check if the graph is connected
+    if (g.isConnected()) {
+        cout << "Graph is connected." << endl;
+    } else {
+        cout << "Graph is not connected." << endl;
+    }
+
+    // Print the graph
+    cout << "The graph:" << endl;
     g.printGraph();
 
-    if (g.isConnected())
-        cout << "Graph is connected" << endl;
-    else
-        cout << "Graph is not connected" << endl;
+    // Generate random colors for each node
+    cout << "Generating random colors for each node:" << endl;
+    vector<node<int>*> vertexes = g.getVertexes();
+    for (auto n : vertexes) {
+        n->color = g.generate_random_color();
+    }
+
+    //check if coloring is valid (it should be since random color generator adds unique color for each node)
+    if (g.check_coloring()) {
+        cout << "Valid coloring!" << endl;
+    } else {
+        cout << "Invalid coloring!" << endl;
+    }
+
+    cout << "Number of unique colors in graph: " << g.countColors() << endl;
+
+    //heuristic coloring
+    g.greedy_coloring();
+    g.print_coloring();
+
+    if (g.check_coloring()) {
+        cout << "Valid coloring!" << endl;
+    } else {
+        cout << "Invalid coloring!" << endl;
+    }
+
+    cout << "Number of unique colors in graph: " << g.countColors() << endl;
 
     return 0;
 }
 
-
 // To run this code, compile it with:
-// g++ main.cc -o main -std=c++11
+// g++ main.cpp -o main -std=c++11
 // Then run it with:
 // ./main

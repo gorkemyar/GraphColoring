@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <list>
+#include <set>
 
 using namespace std;
 
@@ -53,7 +54,12 @@ class Graph{
         bool check_coloring();
         bool check_neighbors_coloring(node<type>* n, string color);
         void print_coloring();
+        void greedy_coloring();
+        int countColors();
         string generate_random_color();
+        vector<node<type>*> getVertexes() const {
+        return vertexes;
+        }
         //void color_graph_brute_force();
 
     private:
@@ -386,6 +392,62 @@ string Graph<type>::generate_random_color(){
     }
     return color;
 }
+
+
+template <class type>
+void Graph<type>::greedy_coloring() {
+    // Sort the nodes based on their degrees in non-increasing order
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() > b->adjacent.size();
+    });
+
+    // Initialize colors for all nodes to "white"
+    for (auto v : vertexes) {
+        v->color = "white";
+    }
+
+    // Color the first node with the first available color
+    vertexes[0]->color = generate_random_color();
+    colors.insert(vertexes[0]->color);
+
+    // Color the remaining nodes
+    for (size_t i = 1; i < vertexes.size(); i++) {
+        // Find the first available color that is not in the adjacent nodes
+        unordered_set<string> forbiddenColors;
+        for (const auto &edge : vertexes[i]->adjacent) {
+            forbiddenColors.insert(edge.to->color);
+        }
+
+        // Assign the first available color
+        string availableColor = "";
+        for (const auto &color : colors) {
+            if (forbiddenColors.find(color) == forbiddenColors.end()) {
+                availableColor = color;
+                break;
+            }
+        }
+
+        // If no available color found, create a new one and add it to the set of colors
+        if (availableColor == "") {
+            availableColor = generate_random_color();
+            colors.insert(availableColor);
+        }
+
+        vertexes[i]->color = availableColor;
+    }
+}
+
+template <class type>
+int Graph<type>::countColors(){
+    set<string> unique_colors;
+    for (auto vertex : vertexes){
+        if (vertex->color != ""){
+            unique_colors.insert(vertex->color);
+        }
+    }
+    return unique_colors.size();
+}
+
 
 // template <class type>
 // void Graph<type>::color_graph_brute_force(){
