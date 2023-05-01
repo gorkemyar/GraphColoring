@@ -1,55 +1,34 @@
 #include <iostream>
 #include <string>
 #include "graph.h"
-
+#include "courses/courses.h"
 using namespace std;
 
-typedef void (Graph<int>::*algorithm)();
 
-algorithm findAlgorithm(char type){
-    switch (type)
-    {
-    case 'g':
-        return &Graph<int>::greedy_coloring;
-        break;
-    case 'm':
-        return &Graph<int>::greedy_coloring_min_available_color;
-        break;
-    default:
-        return &Graph<int>::greedy_coloring;
-        break;
-    }
-}
 
-void create_random_colors(Graph<int> & g){
-    vector<node<int>*> vertexes = g.getVertexes();
-    for (auto n : vertexes) {
-        n->color = g.generate_random_color();
-    }
-}
+typedef void (Graph<string>::*algorithm)();
 
-void print_results(Graph<int> & g){
-    if (g.check_coloring()) {
-        cout << "Valid coloring!" << endl;
-    } else {
-        cout << "Invalid coloring!" << endl;
-    }
+// function declarations
 
-    cout << "Number of unique colors in graph: " << g.countColors() << endl;
-    g.print_coloring();
-}
-void testCase(Graph<int> & g, char type){
-      //heuristic coloring
-    algorithm alg = findAlgorithm('g');
-    (g.*alg)();
-    print_results(g);
-}
+template<typename type>
+algorithm findAlgorithm(Graph<type> & g, char type1);
+
+template<typename type>
+void create_random_colors(Graph<type> & g);
+
+template<typename type>
+void print_results(Graph<type> & g);
+
+template<typename type>
+void testCase(Graph<type> & g, char type1);
 
 
 int main(){
-
-    Graph<int> g;
-    g.create_random_graph(30, 100, [](int i){ return i; });
+    
+    Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
+    
+    Graph<string> g;
+    g.create_random_graph(30, 100, [&](int i){return courses.generate_random_course();});
 
     // Check if the graph is connected
     if (g.isConnected()) {
@@ -65,7 +44,55 @@ int main(){
     // test available algorithms
     // g: greedy_coloring
     // m: greedy_coloring_min_available_color
-    testCase(g, 'g');
-    g.printGraphJson();  
+    testCase<string>(g, 'g');
+    g.printGraphJson(); 
+    
     return 0;
 }
+
+// function implementations 
+
+template<typename type>
+algorithm findAlgorithm(Graph<type> & g, char type1){
+    switch (type1)
+    {
+    case 'g':
+        return &Graph<type>::greedy_coloring;
+        break;
+    case 'm':
+        return &Graph<type>::greedy_coloring_min_available_color;
+        break;
+    default:
+        return &Graph<type>::greedy_coloring;
+        break;
+    }
+}
+
+template<typename type>
+void print_results(Graph<type> & g){
+    if (g.check_coloring()) {
+        cout << "Valid coloring!" << endl;
+    } else {
+        cout << "Invalid coloring!" << endl;
+    }
+
+    cout << "Number of unique colors in graph: " << g.countColors() << endl;
+    g.print_coloring();
+}
+
+template<typename type>
+void testCase(Graph<type> & g, char type1){
+      //heuristic coloring
+    algorithm alg = findAlgorithm<type>(g, type1);
+    (g.*alg)();
+    print_results<type>(g);
+}
+
+template<typename type>
+void create_random_colors(Graph<type> & g){
+    vector<node<type>*> vertexes = g.getVertexes();
+    for (auto n : vertexes) {
+        n->color = g.generate_random_color();
+    }
+}
+

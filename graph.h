@@ -1,7 +1,6 @@
 #ifndef Graph_h
 #define Graph_h
 
-
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -51,7 +50,7 @@ class Graph{
         bool deleteEdge(type from, type to);
         void BFS(function<type(type)> func, type from);
         void DFS(function<type(type)> func, type from);
-        void create_random_graph(int num_nodes, int num_edges, function<type(type)> random_generator);
+        void create_random_graph(int num_nodes, int num_edges, function<type(int)> random_generator);
         bool check_neighbours_coloring(node<type>* n, string color);
         bool check_coloring();
         

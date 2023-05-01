@@ -14,9 +14,15 @@ Graph<type>::Graph(){
 template <class type>
 Graph<type>::~Graph(){
     //cout << "Graph destroyed" << endl;
+
     for (int i=0; i<vertexes.size(); i++){
-        deleteNode(vertexes[i]->word);
+        //cout<<i<<" "<<vertexes[i]->word<<endl;
+        //deleteNode(vertexes[i]->word);
+
+        delete vertexes[i];
     }
+ 
+
 
     map.clear();
     vertexes.clear();
@@ -207,19 +213,33 @@ bool Graph<type>::deleteNode(type word){
     node<type>* n = findNode(word);
     if (n != nullptr){
         for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
+            cout<<"Is error0"<<endl;
+            
+            cout<<"Is error0.5"<<endl;
             deleteEdge(n->word, it->to->word);
-            // if (checkEdge(it->to->word, n->word)){
-            //     deleteEdge(it->to->word, n->word);
-            // }
+            cout<<"Is error0.75"<<endl;
+            if (checkEdge(it->to->word, n->word)){
+                cout<<"Is undirected"<<endl;
+                deleteEdge(it->to->word, n->word);
+                cout<<"Is error1"<<endl;
+            }
+
+            
         }
+        cout<<"Is error2"<<endl;
         map.erase(word);
+        
+        cout<<"Is error3"<<endl;
         for (int i=0; i<vertexes.size(); i++){
             if (vertexes[i] == n){
                 vertexes.erase(vertexes.begin()+i);
                 break;
             }
         }
+        
+        cout<<"Is error4"<<endl;
         delete n;
+        cout<<"Is error5"<<endl;
         return true;
     }
     return false;
@@ -232,11 +252,14 @@ bool Graph<type>::deleteEdge(type from, type to){
     if (f != nullptr && t != nullptr){
         for (auto it = f->adjacent.begin(); it != f->adjacent.end(); it++){
             if (it->to == t){
+                cout << "Delete edge\n";
                 f->adjacent.erase(it);
+                cout << "Delete edge\n";
                 return true;
             }
         }
     }
+
     return false;
 }
 
@@ -285,8 +308,7 @@ void Graph<type>::DFS(function<type(type)> func, type start){
 }
 
 template <class type>
-void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<type(type)> random_generator){
-    
+void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<type(int)> random_generator){ 
     for (int i=0; i<num_nodes; i++){
         type obj = random_generator(i);
         while (findNode(obj) != nullptr){
