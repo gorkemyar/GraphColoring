@@ -41,7 +41,7 @@ class Graph{
         ~Graph();
         void addNode(type word);
         void addEdgeDirected(type from, type to, int weight);
-        void addEdgeUndirected(type from, type to, int weight);
+        bool addEdgeUndirected(type from, type to, int weight);
         bool checkEdge(type from, type to);
         void printGraph();
         void printPath(node<type>* from, node<type>* to);
@@ -51,23 +51,22 @@ class Graph{
         void BFS(function<type(type)> func, type from);
         void DFS(function<type(type)> func, type from);
         void create_random_graph(int num_nodes, int num_edges, function<type(type)> random_generator);
+        bool check_neighbours_coloring(node<type>* n, string color);
         bool check_coloring();
-        bool check_neighbors_coloring(node<type>* n, string color);
+        
         void print_coloring();
         void greedy_coloring();
+        void greedy_coloring_min_available_color();
         int countColors();
         string generate_random_color();
-        vector<node<type>*> getVertexes() const {
-        return vertexes;
-        }
-        //void color_graph_brute_force();
+        vector<node<type>*> getVertexes() const;
 
     private:
         unordered_map<type, node<type>*> map;
         vector<node<type>*> vertexes;
         unordered_set<node<type>*> visited;
 
-        unordered_set<string> colors;
+        unordered_map<string, int> colors;
         node<type>* findNode(type from);
         string generate_random_color_helper();
         
@@ -127,7 +126,7 @@ void Graph<type>::addEdgeDirected(type from, type to, int weight){
 }
 
 template <class type>
-void Graph<type>::addEdgeUndirected(type from, type to, int weight){
+bool Graph<type>::addEdgeUndirected(type from, type to, int weight){
     node<type>* f = findNode(from);
     node<type>* t = findNode(to);
     if (f != nullptr 
@@ -140,8 +139,17 @@ void Graph<type>::addEdgeUndirected(type from, type to, int weight){
         edge<type> e2(t, f, weight);
         f->adjacent.push_back(e1);
         t->adjacent.push_back(e2);
+        return true;
     } else{
-        cout << "Node does not exist" << endl;
+        if (f == nullptr || t == nullptr){
+            cout << "Node does not exist" << endl;
+            return false;
+        } else if (f == t){
+            cout << "Cannot add edge to itself" << endl;
+            return false;
+        } 
+
+        return false;
     }
 }
 
@@ -308,15 +316,20 @@ void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<typ
     for (int i = 1; i < num_nodes; i++){
         int from = rand()%i;
         int weight = rand()%100;
-        addEdgeUndirected(vertexes[from]->word, vertexes[i]->word, weight);
+        while (!addEdgeUndirected(vertexes[from]->word, vertexes[i]->word, weight)){
+            from = rand()%i;
+        }
     }
 
     num_edges -= (num_nodes-1);
-    for (int i = 1; i < num_edges; i++){
+    for (int i = 0; i < num_edges; i++){
         int from = rand()%num_nodes;
         int to = rand()%num_nodes;
         int weight = rand()%100;
-        addEdgeUndirected(vertexes[from]->word, vertexes[to]->word, weight);
+        while (!addEdgeUndirected(vertexes[from]->word, vertexes[to]->word, weight)){
+            from = rand()%num_nodes;
+            to = rand()%num_nodes;
+        }
     }
 }
 
@@ -346,8 +359,8 @@ bool Graph<type>::check_coloring(){
     return true;
 }
 
-template<class type>    
-bool Graph<type>::check_neighbors_coloring(node<type>* n, string c){
+template <class type>    
+bool Graph<type>::check_neighbours_coloring(node<type>* n, string c){
     for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
         if (it->to->color == c){
             return false;
@@ -397,6 +410,7 @@ string Graph<type>::generate_random_color(){
 template <class type>
 void Graph<type>::greedy_coloring() {
     // Sort the nodes based on their degrees in non-increasing order
+    
     sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
         return a->adjacent.size() > b->adjacent.size();
     });
@@ -408,7 +422,7 @@ void Graph<type>::greedy_coloring() {
 
     // Color the first node with the first available color
     vertexes[0]->color = generate_random_color();
-    colors.insert(vertexes[0]->color);
+    colors[vertexes[0]->color] = 1;
 
     // Color the remaining nodes
     for (size_t i = 1; i < vertexes.size(); i++) {
@@ -421,8 +435,8 @@ void Graph<type>::greedy_coloring() {
         // Assign the first available color
         string availableColor = "";
         for (const auto &color : colors) {
-            if (forbiddenColors.find(color) == forbiddenColors.end()) {
-                availableColor = color;
+            if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
+                availableColor = color.first;
                 break;
             }
         }
@@ -430,12 +444,14 @@ void Graph<type>::greedy_coloring() {
         // If no available color found, create a new one and add it to the set of colors
         if (availableColor == "") {
             availableColor = generate_random_color();
-            colors.insert(availableColor);
+            colors[availableColor] = 1;
         }
 
         vertexes[i]->color = availableColor;
     }
 }
+
+
 
 template <class type>
 int Graph<type>::countColors(){
@@ -449,35 +465,52 @@ int Graph<type>::countColors(){
 }
 
 
-// template <class type>
-// void Graph<type>::color_graph_brute_force(){
-//     static int colored_nodes = 0;
-//     static int min_colors = INT_MAX;
-//     if (colored_nodes == vertexes.size()){
-//         return;
-//     }
+template <class type>
+vector<node<type>*> Graph<type>::getVertexes() const{
+    return vertexes;
+}
 
-//     for (int i=0; i<vertexes.size(); i++){
-//         if (vertexes[i]->color == ""){
-//             vertexes[i]->color = generate_random_color();
-//             colored_nodes++;
-//             if (check_coloring()){
-//                 color_graph_brute_force();
-//             }
-//             for (int j=0; j<vertexes.size(); j++){
-//                 if (i != j 
-//                     && !checkEdge(vertexes[i]->word, vertexes[j]->word) 
-//                     && vertexes[j]->color == ""
-//                     && check_neighbors_coloring(vertexes[j], vertexes[i]->color)){
-                    
-//                     vertexes[j]->color = vertexes[i]->color;
-//                     colored_nodes++;
-//                     color_graph_brute_force();
-//                 }
-//             }
-//         }
-//     }  
-// }
+template <class type>
+void Graph<type>::greedy_coloring_min_available_color(){
+    colors.clear();
+
+    for (auto v : vertexes) {
+        v->color = "white";
+    }
+
+    vertexes[0]->color = generate_random_color();
+    colors[vertexes[0]->color] = 1;
+
+    
+    for (size_t i = 1; i < vertexes.size(); i++) {
+        unordered_set<string> forbiddenColors;    
+        for (const auto &edge : vertexes[i]->adjacent) {
+            forbiddenColors.insert(edge.to->color);
+        }
+
+        string availableColor = "";
+        int min_color_count = INT_MAX;
+        for (const auto &color : colors) {
+            if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
+                if (color.second < min_color_count){
+                    min_color_count = color.second;
+                    availableColor = color.first;
+                }
+            }
+        }
+
+        if (availableColor == "") {
+            availableColor = generate_random_color();
+            colors[availableColor] = 1;
+        }else{
+            colors[availableColor] += 1;
+        }
+
+        vertexes[i]->color = availableColor;
+    }
+
+}
+
 
 
 #endif

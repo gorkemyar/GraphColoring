@@ -4,22 +4,53 @@
 
 using namespace std;
 
+typedef void (Graph<int>::*algorithm)();
+
+algorithm findAlgorithm(char type){
+    switch (type)
+    {
+    case 'g':
+        return &Graph<int>::greedy_coloring;
+        break;
+    case 'm':
+        return &Graph<int>::greedy_coloring_min_available_color;
+        break;
+    default:
+        return &Graph<int>::greedy_coloring;
+        break;
+    }
+}
+
+void create_random_colors(Graph<int> & g){
+    vector<node<int>*> vertexes = g.getVertexes();
+    for (auto n : vertexes) {
+        n->color = g.generate_random_color();
+    }
+}
+
+
+void print_results(Graph<int> & g){
+    if (g.check_coloring()) {
+        cout << "Valid coloring!" << endl;
+    } else {
+        cout << "Invalid coloring!" << endl;
+    }
+
+    cout << "Number of unique colors in graph: " << g.countColors() << endl;
+    g.print_coloring();
+}
+void testCase(Graph<int> & g, char type){
+      //heuristic coloring
+    algorithm alg = findAlgorithm('g');
+    (g.*alg)();
+    print_results(g);
+}
+
+
+
+
 int main(){
-    // Graph<int> g;
-    // g.addNode(1);
-    // g.addNode(2);
-    // g.addNode(3);
-    // g.addNode(4);
 
-
-    // g.addEdgeUndirected(1,2,1);
-    // g.addEdgeUndirected(1,3,1);
-    // g.addEdgeUndirected(2,3,1);
-    // g.addEdgeUndirected(2,4,1);
-    // g.addEdgeUndirected(3,4,1);
-
-
-    // Create a graph with 10 nodes and 20 random edges
     Graph<int> g;
     g.create_random_graph(10, 20, [](int i){ return i; });
 
@@ -33,39 +64,11 @@ int main(){
     // Print the graph
     cout << "The graph:" << endl;
     g.printGraph();
-
-    // Generate random colors for each node
-    cout << "Generating random colors for each node:" << endl;
-    vector<node<int>*> vertexes = g.getVertexes();
-    for (auto n : vertexes) {
-        n->color = g.generate_random_color();
-    }
-
-    //check if coloring is valid (it should be since random color generator adds unique color for each node)
-    if (g.check_coloring()) {
-        cout << "Valid coloring!" << endl;
-    } else {
-        cout << "Invalid coloring!" << endl;
-    }
-
-    cout << "Number of unique colors in graph: " << g.countColors() << endl;
-
+  
     //heuristic coloring
-    g.greedy_coloring();
-    g.print_coloring();
-
-    if (g.check_coloring()) {
-        cout << "Valid coloring!" << endl;
-    } else {
-        cout << "Invalid coloring!" << endl;
-    }
-
-    cout << "Number of unique colors in graph: " << g.countColors() << endl;
-
+    // test available algorithms
+    // g: greedy_coloring
+    // m: greedy_coloring_min_available_color
+    testCase(g, 'g');
     return 0;
 }
-
-// To run this code, compile it with:
-// g++ main.cpp -o main -std=c++11
-// Then run it with:
-// ./main
