@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <list>
 #include <set>
+#include <fstream>
+
+
 
 using namespace std;
 
@@ -45,6 +48,7 @@ class Graph{
         bool checkEdge(type from, type to);
         void printGraph();
         void printPath(node<type>* from, node<type>* to);
+        void printGraphJson();
         bool isConnected();
         bool deleteNode(type word);
         bool deleteEdge(type from, type to);
@@ -189,6 +193,47 @@ void Graph<type>::printPath(node<type>* from, node<type>* to){
         printPath(from, to->path);
         cout << to->word << " ";
     }
+}
+
+template <class type>
+void Graph<type>::printGraphJson(){
+    // open output file
+    ofstream out;
+    out.open("graph.json");
+
+    out << "{" << endl;
+    out << "\t\"nodes\": {" << endl;
+    for (int i=0; i<vertexes.size(); i++){
+        out << "\t\"" << vertexes[i]->word << "\": [";
+        int size = vertexes[i]->adjacent.size();
+        int j = 0;
+        for (auto it = vertexes[i]->adjacent.begin(); it != vertexes[i]->adjacent.end(); it++){
+            out << "\"" << it->to->word;
+            if (j < size -1){
+                out << "\", ";
+            }else{
+                out << "\"";
+            }
+            j++;
+
+        }
+        if (i < vertexes.size() - 1){
+            out << "]," << endl;
+        } else{
+            out << "]" << endl;
+        }
+    }
+    out << "\t}," << endl;
+
+    out << "\t\"colors\": [" << endl;
+    for (int i=0; i<vertexes.size(); i++){
+        out << "\""<<vertexes[i]->color<<"\"";
+        if (i < vertexes.size() - 1){
+            out << ", ";
+        }
+    }
+    out << "]" << endl;
+    out << "}" << endl;
 }
 
 template <class type>

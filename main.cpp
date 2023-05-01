@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 
+
 using namespace std;
 
 typedef void (Graph<int>::*algorithm)();
@@ -47,8 +48,6 @@ void testCase(Graph<int> & g, char type){
 }
 
 
-
-
 int main(){
 
     Graph<int> g;
@@ -63,12 +62,13 @@ int main(){
 
     // Print the graph
     cout << "The graph:" << endl;
-    g.printGraph();
-  
+    
     //heuristic coloring
     // test available algorithms
     // g: greedy_coloring
     // m: greedy_coloring_min_available_color
     testCase(g, 'g');
+    g.printGraphJson();  
     return 0;
 }
+
