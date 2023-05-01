@@ -1,0 +1,4 @@
+make
+./main
+python3 representation.py
+make clean

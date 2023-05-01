@@ -1,7 +1,6 @@
-#include "graph.h"
 #include <iostream>
 #include <string>
-
+#include "graph.h"
 
 using namespace std;
 
@@ -29,7 +28,6 @@ void create_random_colors(Graph<int> & g){
     }
 }
 
-
 void print_results(Graph<int> & g){
     if (g.check_coloring()) {
         cout << "Valid coloring!" << endl;
@@ -51,7 +49,7 @@ void testCase(Graph<int> & g, char type){
 int main(){
 
     Graph<int> g;
-    g.create_random_graph(10, 20, [](int i){ return i; });
+    g.create_random_graph(30, 100, [](int i){ return i; });
 
     // Check if the graph is connected
     if (g.isConnected()) {
@@ -71,4 +69,3 @@ int main(){
     g.printGraphJson();  
     return 0;
 }
-
