@@ -12,6 +12,7 @@
     "string_view": "cpp",
     "stdexcept": "cpp",
     "vector": "cpp",
-    "unordered_map": "cpp"
+    "unordered_map": "cpp",
+    "iostream": "cpp"
   }
 }

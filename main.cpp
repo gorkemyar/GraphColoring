@@ -23,12 +23,27 @@ template<typename type>
 void testCase(Graph<type> & g, char type1);
 
 
-int main(){
+int main(int argc, char** argv){
     
+    int node_count = 30;
+    int edge_count = 100;
+    char algo = 'g';
+
+    if (argc > 1) {
+        node_count = stoi(argv[1]);
+    }
+    if (argc > 2) {
+        edge_count = stoi(argv[2]);
+    }if (argc > 3) {
+        algo = argv[3][0];
+    }
+
+
+
     Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
     
     Graph<string> g;
-    g.create_random_graph(30, 100, [&](int i){return courses.generate_random_course();});
+    g.create_random_graph(node_count, edge_count, [&](int i){return courses.generate_random_course();});
 
     // Check if the graph is connected
     if (g.isConnected()) {
@@ -36,17 +51,14 @@ int main(){
     } else {
         cout << "Graph is not connected." << endl;
     }
-
-    // Print the graph
-    cout << "The graph:" << endl;
     
     //heuristic coloring
     // test available algorithms
     // g: greedy_coloring
     // m: greedy_coloring_min_available_color
-    testCase<string>(g, 'g');
+    testCase<string>(g, algo);
     g.printGraphJson(); 
-    
+
     return 0;
 }
 
