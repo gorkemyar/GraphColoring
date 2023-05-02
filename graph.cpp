@@ -375,6 +375,22 @@ bool Graph<type>::check_neighbours_coloring(node<type>* n, string c){
 }
 
 template <class type>
+int Graph<type>::countColors(){
+    set<string> unique_colors;
+    for (auto vertex : vertexes){
+        if (vertex->color != ""){
+            unique_colors.insert(vertex->color);
+        }
+    }
+    return unique_colors.size();
+}
+
+template <class type>
+vector<node<type>*> Graph<type>::getVertexes() const{
+    return vertexes;
+}
+
+template <class type>
 string Graph<type>::generate_random_color_helper(){
     string color = "#";
     for (int i=0; i<6; i++){
@@ -397,6 +413,9 @@ string Graph<type>::generate_random_color(){
     }
     return color;
 }
+
+
+/* Algorithms for coloring the graph */
 
 template <class type>
 void Graph<type>::greedy_coloring() {
@@ -442,26 +461,15 @@ void Graph<type>::greedy_coloring() {
     }
 }
 
+// Complexity O(V^2)
 template <class type>
-int Graph<type>::countColors(){
-    set<string> unique_colors;
-    for (auto vertex : vertexes){
-        if (vertex->color != ""){
-            unique_colors.insert(vertex->color);
-        }
-    }
-    return unique_colors.size();
-}
-
-template <class type>
-vector<node<type>*> Graph<type>::getVertexes() const{
-    return vertexes;
-}
-
-template <class type>
-void Graph<type>::greedy_coloring_min_available_color(){
+void Graph<type>::Dsatur_coloring(){
     colors.clear();
-
+    
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() > b->adjacent.size();
+    });
+    
     for (auto v : vertexes) {
         v->color = "white";
     }
@@ -497,4 +505,81 @@ void Graph<type>::greedy_coloring_min_available_color(){
         vertexes[i]->color = availableColor;
     }
 
+}
+
+
+// Complexity O(V^2*lambda)
+template <class type>
+void Graph<type>::welsh_powell_coloring() {
+    // Sort the nodes based on their degrees in non-increasing order
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() > b->adjacent.size();
+    });
+
+    // Initialize colors for all nodes to "white"
+    for (auto v : vertexes) {
+        v->color = "white";
+    }
+
+    for (int i = 0; i < vertexes.size(); i++) {
+        if (vertexes[i]->color == "white") {
+            vertexes[i]->color = generate_random_color();
+            colors[vertexes[i]->color] = 1;
+            
+            vector<int> uncolored_rmn;
+            for (int j = i+1; j < vertexes.size(); j++) {
+                if (vertexes[j]->color == "white") {
+                    uncolored_rmn.push_back(j);
+                }
+            }
+
+            for (int j = 0; j < uncolored_rmn.size(); j++) {
+                if (check_neighbours_coloring(vertexes[uncolored_rmn[j]], vertexes[i]->color)) {
+                    vertexes[uncolored_rmn[j]]->color = vertexes[i]->color;
+                    colors[vertexes[i]->color] += 1;
+                }
+            }
+        }
+    }
+
+}
+
+
+template <class type>
+void Graph<type>::SDL_coloring() {
+    // Sort the nodes based on their degrees in non-decreasing order
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() < b->adjacent.size();
+    });
+
+    // Initialize colors for all nodes to "white"
+    for (auto v : vertexes) {
+        v->color = "white";
+    }
+
+    // Color the nodes in order of increasing degree
+    for (auto v : vertexes) {
+        // Find the first available color that is not in the adjacent nodes
+        unordered_set<string> forbiddenColors;
+        for (const auto &edge : v->adjacent) {
+            forbiddenColors.insert(edge.to->color);
+        }
+
+        // Assign the first available color
+        string availableColor = "";
+        for (const auto &color : colors) {
+            if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
+                availableColor = color.first;
+                break;
+            }
+        }
+
+        // If no available color found, create a new one and add it to the set of colors
+        if (availableColor == "") {
+            availableColor = generate_random_color();
+            colors[availableColor] = 1;
+        }
+
+        v->color = availableColor;
+    }
 }

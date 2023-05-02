@@ -4,8 +4,6 @@
 #include "courses/courses.h"
 using namespace std;
 
-
-
 typedef void (Graph<string>::*algorithm)();
 
 // function declarations
@@ -38,8 +36,6 @@ int main(int argc, char** argv){
         algo = argv[3][0];
     }
 
-
-
     Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
     
     Graph<string> g;
@@ -52,10 +48,6 @@ int main(int argc, char** argv){
         cout << "Graph is not connected." << endl;
     }
     
-    //heuristic coloring
-    // test available algorithms
-    // g: greedy_coloring
-    // m: greedy_coloring_min_available_color
     testCase<string>(g, algo);
     g.printGraphJson(); 
 
@@ -69,10 +61,19 @@ algorithm findAlgorithm(Graph<type> & g, char type1){
     switch (type1)
     {
     case 'g':
+        cout<<"Greedy"<<endl;
         return &Graph<type>::greedy_coloring;
         break;
-    case 'm':
-        return &Graph<type>::greedy_coloring_min_available_color;
+    case 'd':
+        cout<<"Dsatur"<<endl;
+        return &Graph<type>::Dsatur_coloring;
+        break;
+    case 's':
+        return &Graph<type>::SDL_coloring;
+        break;
+    case 'w':
+        cout<<"Welsh Powell"<<endl;
+        return &Graph<type>::welsh_powell_coloring;
         break;
     default:
         return &Graph<type>::greedy_coloring;

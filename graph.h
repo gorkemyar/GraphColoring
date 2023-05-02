@@ -56,7 +56,15 @@ class Graph{
         
         void print_coloring();
         void greedy_coloring();
-        void greedy_coloring_min_available_color();
+        void Dsatur_coloring();
+        void welsh_powell_coloring();
+
+        void SDL_coloring();
+        //void monte_carlo_coloring(int n);
+        //void LDF_coloring();
+        
+        
+
         int countColors();
         string generate_random_color();
         vector<node<type>*> getVertexes() const;
