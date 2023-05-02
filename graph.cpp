@@ -614,3 +614,4 @@ void Graph<type>::SDL_coloring() {
         }
     }
 }
+

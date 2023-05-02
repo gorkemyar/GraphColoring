@@ -60,7 +60,6 @@ class Graph{
         void welsh_powell_coloring();
 
         void SDL_coloring();
-        //void monte_carlo_coloring(int n);
         //void LDF_coloring();
         
         
