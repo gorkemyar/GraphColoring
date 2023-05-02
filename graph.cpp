@@ -548,17 +548,43 @@ void Graph<type>::welsh_powell_coloring() {
 template <class type>
 void Graph<type>::SDL_coloring() {
     // Sort the nodes based on their degrees in non-decreasing order
-    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
-        return a->adjacent.size() < b->adjacent.size();
-    });
-
-    // Initialize colors for all nodes to "white"
+    unordered_set<node<type>*> colored_nodes;
+    priority_queue<pair<int, node<type>*>> pq;
+    unordered_map<node<type>*, int> saturation;
+    colors.clear();
     for (auto v : vertexes) {
         v->color = "white";
+        pq.push(make_pair(v->adjacent.size(), v));
+        saturation[v] = 0;
     }
 
     // Color the nodes in order of increasing degree
-    for (auto v : vertexes) {
+    while (!pq.empty()) {
+
+        pair<int, node<type>*> p1 = pq.top();
+        pq.pop();
+
+        node<type>* v = p1.second;
+        int degree = p1.first;
+        int sat = saturation[v];
+
+        vector<pair<int, node<type>*>> temp_vec;
+        while (!pq.empty()) {
+            pair<int, node<type>*> p2 = pq.top();
+            if (p2.first < degree) {
+                break;
+            }
+            pq.pop();
+            temp_vec.push_back(p2);
+            if (saturation[p2.second] > sat) {
+                v = p2.second;
+                degree = p2.first;
+                sat = saturation[p2.second];
+            }
+        }
+        for (auto p : temp_vec) {
+            pq.push(p);
+        }
         // Find the first available color that is not in the adjacent nodes
         unordered_set<string> forbiddenColors;
         for (const auto &edge : v->adjacent) {
@@ -581,5 +607,10 @@ void Graph<type>::SDL_coloring() {
         }
 
         v->color = availableColor;
+
+        // Update the saturation of the adjacent nodes
+        for (const auto &edge : v->adjacent) {
+            saturation[edge.to] += 1;
+        }
     }
 }

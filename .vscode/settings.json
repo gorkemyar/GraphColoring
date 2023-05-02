@@ -13,6 +13,11 @@
     "stdexcept": "cpp",
     "vector": "cpp",
     "unordered_map": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "tuple": "cpp",
+    "filesystem": "cpp",
+    "queue": "cpp",
+    "stack": "cpp",
+    "__node_handle": "cpp"
   }
 }
