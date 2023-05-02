@@ -583,3 +583,4 @@ void Graph<type>::SDL_coloring() {
         v->color = availableColor;
     }
 }
+

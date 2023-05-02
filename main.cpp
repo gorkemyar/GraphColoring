@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <fstream>
 #include "graph.h"
 #include "courses/courses.h"
 using namespace std;
@@ -20,6 +22,8 @@ void print_results(Graph<type> & g);
 template<typename type>
 void testCase(Graph<type> & g, char type1);
 
+template <typename type>
+void run_all_algorithms_and_save_timings(Graph<type> &g);
 
 int main(int argc, char** argv){
     
@@ -51,6 +55,8 @@ int main(int argc, char** argv){
     testCase<string>(g, algo);
     g.printGraphJson(); 
 
+    run_all_algorithms_and_save_timings(g);
+    
     return 0;
 }
 
@@ -109,3 +115,28 @@ void create_random_colors(Graph<type> & g){
     }
 }
 
+template <typename type>
+void run_all_algorithms_and_save_timings(Graph<type> &g) {
+    std::vector<char> algo_types = {'g', 'd', 's', 'w'};
+    std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh Powell"};
+    std::vector<double> algo_timings;
+
+    std::ofstream outfile("algo_timings.dat");
+
+    outfile << "Algorithm\tRuntime (ms)" << std::endl;
+
+    for (size_t i = 0; i < algo_types.size(); ++i) {
+        algorithm alg = findAlgorithm<type>(g, algo_types[i]);
+
+        auto start = std::chrono::high_resolution_clock::now();
+        (g.*alg)();
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        algo_timings.push_back(elapsed.count());
+
+        outfile << algo_names[i] << "\t" << algo_timings[i] << std::endl;
+    }
+
+    outfile.close();
+}
