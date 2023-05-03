@@ -575,54 +575,95 @@ void Graph<type>::welsh_powell_coloring() {
 
 
 template <class type>
-void Graph<type>::rlf_coloring_helper(node<type>* n){
-    unordered_set<string> forbiddenColors;    
-    for (const auto &edge : n->adjacent) {
-        forbiddenColors.insert(edge.to->color);
+void Graph<type>::rlf_coloring_helper(int & colored){
+    visited.clear();
+
+    int max_degree = 0;
+    node<type>* max_degree_node = vertexes[0];
+    for (auto vertex : vertexes){
+        if (vertex->color == "white" && vertex->adjacent.size() > max_degree){
+            max_degree = vertex->adjacent.size();
+            max_degree_node = vertex;
+        }
     }
-    string availableColor = "";
-    int min_color_count = INT_MAX;
-    for (const auto &color : colors) {
-        if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
-            if (color.second < min_color_count){
-                min_color_count = color.second;
-                availableColor = color.first;
+    string color = generate_random_color();
+    max_degree_node->color = color;
+    visited.insert(max_degree_node);
+    colors[max_degree_node->color] = 1;
+    colored += 1;
+    vector<node<type>*> can_be_added;
+    for (auto vertex : vertexes){
+        if (visited.find(vertex) == visited.end() && vertex->color == "white"){
+            bool can_be_colored = true;
+            for (auto edge : vertex->adjacent){
+                if (visited.find(edge.to) != visited.end()){
+                    can_be_colored = false;
+                    break;
+                }
+            }
+            if (can_be_colored){
+                can_be_added.push_back(vertex);
             }
         }
     }
-    if (availableColor == "") {
-        availableColor = generate_random_color();
-        colors[availableColor] = 1;
-    }else{
-        colors[availableColor] += 1;
-    }
-    n->color = availableColor;
 
-    for (int i = 0; i < vertexes.size(); i++){
-        if (vertexes[i]->color == "white" && !checkEdge(n->word, vertexes[i]->word)){
-            vertexes[i]->color = availableColor;
+    sort(can_be_added.begin(), can_be_added.end(), [&](node<type>* a, node<type>* b) {
+        if (a->adjacent.size() > b->adjacent.size()){
+            return true;
+        }else if (a->adjacent.size() == b->adjacent.size()){
+            int a_degree = 0;
+            int b_degree = 0;
+
+            for (auto edge:vertexes){
+                if (edge->color != "white"){
+                    for (auto edge2:edge->adjacent){
+                        if (edge2.to == a){
+                            a_degree += 1;
+                        }
+                        if (edge2.to == b){
+                            b_degree += 1;
+                        }
+                    }
+                }
+            }
+            return a_degree < b_degree;
+        }else{
+            return false;
         }
-        
+    });
+
+    for (auto vertex: can_be_added){
+        if (vertex->color == "white"){
+            bool can_be_colored = true;
+            for (auto edge : vertex->adjacent){
+                if (visited.find(edge.to) != visited.end()){
+                    can_be_colored = false;
+                    break;
+                }
+            }
+            if (can_be_colored){
+                vertex->color = color;
+                visited.insert(vertex);
+                colors[color] += 1;
+                colored += 1;
+            }
+        }
     }
+
+    if (colored < vertexes.size()){
+        rlf_coloring_helper(colored);
+    }
+
 }
 
 
 template <class type>
 void Graph<type>::rlf_coloring(){
-    colors.clear();
-    for (auto vertex : vertexes){
-        vertex->color = "white";
-    }
-
-    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
-        return a->adjacent.size() > b->adjacent.size();
-    });
-
-    for (auto vertex : vertexes){
-        if (vertex->color == "white"){
-            rlf_coloring_helper(vertex);
-        }
-    }
+    
+    // find the max degree
+    
+    int colored = 0;
+    rlf_coloring_helper(colored);
 }
 
 
@@ -664,3 +705,64 @@ void Graph<type>::SDL_coloring() {
         v->color = availableColor;
     }
 }
+
+
+/*
+
+cout<<"Size of matrix: "<<matrix.size()<<endl;
+    while (colored < matrix.size()){
+        // find node with max degree
+        int max_degree = -1;
+        int max_degree_vertex = -1;
+        for (int i = 0; i < matrix.size(); i++){
+            int degree = 0;
+            for (int j = 0; j < matrix[0].size(); j++){
+                if (matrix[i][j] == 1){
+                    degree++;
+                }
+            }
+            if (degree > max_degree && vertexes[i]->color == "white"){
+                max_degree = degree;
+                max_degree_vertex = i;
+            }   
+        }
+        node<type>* n = vertexes[max_degree_vertex];
+        cout<<"decided on node: "<<n->word<<" on index "<<max_degree_vertex<<endl;
+        unordered_set<string> forbiddenColors;    
+        for (const auto &edge : n->adjacent) {
+            forbiddenColors.insert(edge.to->color);
+        }
+        string availableColor = "";
+        int min_color_count = INT_MAX;
+        for (const auto &color : colors) {
+            if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
+                if (color.second < min_color_count){
+                    min_color_count = color.second;
+                    availableColor = color.first;
+                }
+            }
+        }
+        if (availableColor == "") {
+            availableColor = generate_random_color();
+            colors[availableColor] = 1;
+        }else{
+            colors[availableColor] += 1;
+        }
+
+        // color node
+        n->color = availableColor;
+        cout<<"err"<<endl;
+        vector<vector<int>> new_matrix(matrix);
+        cout<<"err2"<<endl;
+        for (int i = 0; i < matrix.size(); i++){
+            if (matrix[max_degree_vertex][i] == 1){
+                new_matrix[max_degree_vertex][i] = 0;
+                new_matrix[i][max_degree_vertex] = 0;
+            }
+        }
+
+        colored += 1;
+        rlf_coloring_helper(new_matrix, colored);
+    }
+
+*/

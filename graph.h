@@ -74,7 +74,7 @@ class Graph{
         unordered_map<string, int> colors;
         node<type>* findNode(type from);
         string generate_random_color_helper();
-        void rlf_coloring_helper(node<type>* n);
+        void rlf_coloring_helper(int&);
         
 };
 #include "graph.cpp"
