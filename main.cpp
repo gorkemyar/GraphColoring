@@ -124,8 +124,8 @@ void create_random_colors(Graph<type> & g){
 
 template <typename type>
 void run_all_algorithms_and_save_timings(Graph<type> &g) {
-    std::vector<char> algo_types = {'g', 'd', 's', 'w'};
-    std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh Powell"};
+    std::vector<char> algo_types = {'g', 'd', 's', 'w', 'r'};
+    std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh Powell", "RLF"};
     std::vector<double> algo_timings;
 
     std::ofstream outfile("algo_timings.dat");

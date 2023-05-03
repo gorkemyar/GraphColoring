@@ -462,7 +462,7 @@ void Graph<type>::greedy_coloring() {
     }
 }
 
-// Complexity O(V^2*log(V))
+// Complexity O(V^2)
 template <class type>
 void Graph<type>::dsatur_coloring(){
     colors.clear();
@@ -598,9 +598,9 @@ void Graph<type>::rlf_coloring_helper(node<type>* n){
     }
     n->color = availableColor;
 
-    for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
-        if (it->to->color == "white"){
-            rlf_coloring_helper(it->to);
+    for (int i = 0; i < vertexes.size(); i++){
+        if (vertexes[i]->color == "white" && !checkEdge(n->word, vertexes[i]->word)){
+            vertexes[i]->color = availableColor;
         }
         
     }

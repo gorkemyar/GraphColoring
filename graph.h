@@ -53,16 +53,14 @@ class Graph{
         void create_random_graph(int num_nodes, int num_edges, function<type(int)> random_generator);
         bool check_neighbours_coloring(node<type>* n, string color);
         bool check_coloring();
-        
         void print_coloring();
+
         void greedy_coloring();
+        void SDL_coloring();
         void dsatur_coloring();
         void welsh_powell_coloring();
         void rlf_coloring();
-        void SDL_coloring();
-        //void LDF_coloring();
-        
-        
+       
 
         int countColors();
         string generate_random_color();
