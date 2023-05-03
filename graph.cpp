@@ -614,6 +614,10 @@ void Graph<type>::rlf_coloring(){
         vertex->color = "white";
     }
 
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() > b->adjacent.size();
+    });
+
     for (auto vertex : vertexes){
         if (vertex->color == "white"){
             rlf_coloring_helper(vertex);
