@@ -573,7 +573,7 @@ void Graph<type>::welsh_powell_coloring() {
 
 }
 
-
+// Worst case complexity O(V^3)
 template <class type>
 void Graph<type>::rlf_coloring_helper(int & colored){
     visited.clear();

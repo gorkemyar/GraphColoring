@@ -1,0 +1,9 @@
+         Color Count              Greedy              Dsatur                 SDL        Welsh Powell                 RLF
+                  16                   4                   4                   6                   4                   5
+                  32                   6                   5                   7                   5                   6
+                  64                   5                   6                   6                   5                   6
+                 128                   5                   5                   7                   5                   6
+                 256                   5                   5                   7                   5                   6
+                 512                   6                   6                   7                   5                   6
+                1024                   6                   6                   8                   5                   6
+                2048                   6                   6                   7                   5                   6
