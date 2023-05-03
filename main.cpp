@@ -28,38 +28,38 @@ void run_all_algorithms_and_save_timings(function<type(int)> random);
 
 int main(int argc, char** argv){
     
-    // int node_count = 30;
-    // int edge_count = 100;
-    // char algo = 'g';
+    int node_count = 30;
+    int edge_count = 100;
+    char algo = 'g';
 
-    // if (argc > 1) {
-    //     node_count = stoi(argv[1]);
-    // }
-    // if (argc > 2) {
-    //     edge_count = stoi(argv[2]);
-    // }if (argc > 3) {
-    //     algo = argv[3][0];
-    // }
+    if (argc > 1) {
+        node_count = stoi(argv[1]);
+    }
+    if (argc > 2) {
+        edge_count = stoi(argv[2]);
+    }if (argc > 3) {
+        algo = argv[3][0];
+    }
 
     Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
     
-    // Graph<string> g;
-    // g.create_random_graph(node_count, edge_count, [&](int i){return courses.generate_random_course();});
+    Graph<string> g;
+    g.create_random_graph(node_count, edge_count, [&](int i){return courses.generate_random_course();});
 
     // // Check if the graph is connected
-    // if (g.isConnected()) {
-    //     cout << "Graph is connected." << endl;
-    // } else {
-    //     cout << "Graph is not connected." << endl;
-    // }
+    if (g.isConnected()) {
+        cout << "Graph is connected." << endl;
+    } else {
+        cout << "Graph is not connected." << endl;
+    }
     
-    // g.printGraph();
+    g.printGraph();
 
 
-    // testCase<string>(g, algo);
-    // g.printGraphJson(); 
+    testCase<string>(g, algo);
+    g.printGraphJson(); 
 
-    run_all_algorithms_and_save_timings<string>([&](int i){return courses.generate_random_course();});
+    //run_all_algorithms_and_save_timings<string>([&](int i){return courses.generate_random_course();});
     
     return 0;
 }
@@ -122,14 +122,14 @@ void create_random_colors(Graph<type> & g){
 template<typename type>
 void run_all_algorithms_and_save_timings(function<type(int)> random) {
     std::vector<char> algo_types = {'g', 'd', 's', 'w', 'r'};
-    std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh Powell", "RLF"};
+    std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh_Powell", "RLF"};
 
     std::ofstream outfile("algo_timings.dat");
     std::ofstream color_out("color_count.dat");
     Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
 
-    outfile << setw(20)<<"Runtime (ms)";
-    color_out << setw(20)<<"Color Count";
+    outfile << setw(20)<<"Runtime(ms)";
+    color_out << setw(20)<<"Color_Count";
     for (int i = 0; i < algo_names.size(); ++i) {
         outfile << setw(20)<<algo_names[i];
         color_out << setw(20)<<algo_names[i];
@@ -140,7 +140,7 @@ void run_all_algorithms_and_save_timings(function<type(int)> random) {
         outfile << setw(20)<<size;
         color_out << setw(20)<<size;
         Graph<type> g;
-        g.create_random_graph(size, size * 3, random);
+        g.create_random_graph(size, size * (size/7), random);
 
         for (size_t i = 0; i < algo_types.size(); ++i) {
             algorithm alg = findAlgorithm<type>(g, algo_types[i]);

@@ -418,6 +418,7 @@ string Graph<type>::generate_random_color(){
 
 /* Algorithms for coloring the graph */
 
+// complexity(n*logn + n*lambda + n*chromatic_color_count)
 template <class type>
 void Graph<type>::greedy_coloring() {
     // Sort the nodes based on their degrees in non-increasing order
@@ -573,7 +574,6 @@ void Graph<type>::welsh_powell_coloring() {
 
 }
 
-// Worst case complexity O(V^3)
 template <class type>
 void Graph<type>::rlf_coloring_helper(int & colored){
     visited.clear();
@@ -656,7 +656,7 @@ void Graph<type>::rlf_coloring_helper(int & colored){
 
 }
 
-
+// Worst case complexity O(V^3) average O(V^2)
 template <class type>
 void Graph<type>::rlf_coloring(){
     
@@ -666,7 +666,7 @@ void Graph<type>::rlf_coloring(){
     rlf_coloring_helper(colored);
 }
 
-
+// complexity(n*logn + n*lambda + n*chromatic_color_count)
 template <class type>
 void Graph<type>::SDL_coloring() {
     // Sort the nodes based on their degrees in non-decreasing order
@@ -706,63 +706,3 @@ void Graph<type>::SDL_coloring() {
     }
 }
 
-
-/*
-
-cout<<"Size of matrix: "<<matrix.size()<<endl;
-    while (colored < matrix.size()){
-        // find node with max degree
-        int max_degree = -1;
-        int max_degree_vertex = -1;
-        for (int i = 0; i < matrix.size(); i++){
-            int degree = 0;
-            for (int j = 0; j < matrix[0].size(); j++){
-                if (matrix[i][j] == 1){
-                    degree++;
-                }
-            }
-            if (degree > max_degree && vertexes[i]->color == "white"){
-                max_degree = degree;
-                max_degree_vertex = i;
-            }   
-        }
-        node<type>* n = vertexes[max_degree_vertex];
-        cout<<"decided on node: "<<n->word<<" on index "<<max_degree_vertex<<endl;
-        unordered_set<string> forbiddenColors;    
-        for (const auto &edge : n->adjacent) {
-            forbiddenColors.insert(edge.to->color);
-        }
-        string availableColor = "";
-        int min_color_count = INT_MAX;
-        for (const auto &color : colors) {
-            if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
-                if (color.second < min_color_count){
-                    min_color_count = color.second;
-                    availableColor = color.first;
-                }
-            }
-        }
-        if (availableColor == "") {
-            availableColor = generate_random_color();
-            colors[availableColor] = 1;
-        }else{
-            colors[availableColor] += 1;
-        }
-
-        // color node
-        n->color = availableColor;
-        cout<<"err"<<endl;
-        vector<vector<int>> new_matrix(matrix);
-        cout<<"err2"<<endl;
-        for (int i = 0; i < matrix.size(); i++){
-            if (matrix[max_degree_vertex][i] == 1){
-                new_matrix[max_degree_vertex][i] = 0;
-                new_matrix[i][max_degree_vertex] = 0;
-            }
-        }
-
-        colored += 1;
-        rlf_coloring_helper(new_matrix, colored);
-    }
-
-*/
