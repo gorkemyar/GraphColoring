@@ -318,6 +318,7 @@ void Graph<type>::create_random_graph(int num_nodes, int num_edges, function<typ
     }
 
     num_edges = max(num_edges, num_nodes-1);
+    num_edges = min(num_edges, num_nodes*(num_nodes-1)/2);
     for (int i = 1; i < num_nodes; i++){
         int from = rand()%i;
         int weight = rand()%100;
@@ -461,26 +462,51 @@ void Graph<type>::greedy_coloring() {
     }
 }
 
-// Complexity O(V^2)
+// Complexity O(V^2*log(V))
 template <class type>
-void Graph<type>::Dsatur_coloring(){
+void Graph<type>::dsatur_coloring(){
     colors.clear();
-    
-    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
-        return a->adjacent.size() > b->adjacent.size();
-    });
-    
-    for (auto v : vertexes) {
-        v->color = "white";
+
+    priority_queue<pair<int, node<type>*>> pq;
+    unordered_map<node<type>*, int> saturation;
+    for (auto vertex : vertexes){
+        vertex->color = "white";
+        pq.push(make_pair(vertex->adjacent.size(), vertex));
+        saturation[vertex] = 0;
     }
 
-    vertexes[0]->color = generate_random_color();
-    colors[vertexes[0]->color] = 1;
+    while (!pq.empty()){
+        pair<int, node<type>*> p1 = pq.top();
+        pq.pop();
+        node<type>* n = p1.second;
+        int max_degree = p1.first;
+        int sat = saturation[n];
+        vector<pair<int, node<type>*>> temp_vec;
+        while (!pq.empty()){
+            pair<int, node<type>*> p2 = pq.top();
+            if (p2.first < max_degree){
+                break;
+            }
+            
+            pq.pop();
 
-    
-    for (size_t i = 1; i < vertexes.size(); i++) {
+            int sat2 = saturation[p2.second];
+            if (sat2 > sat){
+                temp_vec.push_back(p1);
+                p1 = p2;
+                sat = sat2;
+                n = p2.second;
+            }else{
+                temp_vec.push_back(p2);
+            }
+
+        }
+        for (auto p : temp_vec){
+            pq.push(p);
+        }
+
         unordered_set<string> forbiddenColors;    
-        for (const auto &edge : vertexes[i]->adjacent) {
+        for (const auto &edge : n->adjacent) {
             forbiddenColors.insert(edge.to->color);
         }
 
@@ -502,11 +528,14 @@ void Graph<type>::Dsatur_coloring(){
             colors[availableColor] += 1;
         }
 
-        vertexes[i]->color = availableColor;
+        n->color = availableColor;
+
+        for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
+            saturation[it->to] += 1;
+        }
     }
-
+    
 }
-
 
 // Complexity O(V^2*lambda)
 template <class type>
@@ -546,45 +575,67 @@ void Graph<type>::welsh_powell_coloring() {
 
 
 template <class type>
+void Graph<type>::rlf_coloring_helper(node<type>* n){
+    unordered_set<string> forbiddenColors;    
+    for (const auto &edge : n->adjacent) {
+        forbiddenColors.insert(edge.to->color);
+    }
+    string availableColor = "";
+    int min_color_count = INT_MAX;
+    for (const auto &color : colors) {
+        if (forbiddenColors.find(color.first) == forbiddenColors.end()) {
+            if (color.second < min_color_count){
+                min_color_count = color.second;
+                availableColor = color.first;
+            }
+        }
+    }
+    if (availableColor == "") {
+        availableColor = generate_random_color();
+        colors[availableColor] = 1;
+    }else{
+        colors[availableColor] += 1;
+    }
+    n->color = availableColor;
+
+    for (auto it = n->adjacent.begin(); it != n->adjacent.end(); it++){
+        if (it->to->color == "white"){
+            rlf_coloring_helper(it->to);
+        }
+        
+    }
+}
+
+
+template <class type>
+void Graph<type>::rlf_coloring(){
+    colors.clear();
+    for (auto vertex : vertexes){
+        vertex->color = "white";
+    }
+
+    for (auto vertex : vertexes){
+        if (vertex->color == "white"){
+            rlf_coloring_helper(vertex);
+        }
+    }
+}
+
+
+template <class type>
 void Graph<type>::SDL_coloring() {
     // Sort the nodes based on their degrees in non-decreasing order
-    unordered_set<node<type>*> colored_nodes;
-    priority_queue<pair<int, node<type>*>> pq;
-    unordered_map<node<type>*, int> saturation;
-    colors.clear();
+    sort(vertexes.begin(), vertexes.end(), [](node<type>* a, node<type>* b) {
+        return a->adjacent.size() < b->adjacent.size();
+    });
+
+    // Initialize colors for all nodes to "white"
     for (auto v : vertexes) {
         v->color = "white";
-        pq.push(make_pair(v->adjacent.size(), v));
-        saturation[v] = 0;
     }
 
     // Color the nodes in order of increasing degree
-    while (!pq.empty()) {
-
-        pair<int, node<type>*> p1 = pq.top();
-        pq.pop();
-
-        node<type>* v = p1.second;
-        int degree = p1.first;
-        int sat = saturation[v];
-
-        vector<pair<int, node<type>*>> temp_vec;
-        while (!pq.empty()) {
-            pair<int, node<type>*> p2 = pq.top();
-            if (p2.first < degree) {
-                break;
-            }
-            pq.pop();
-            temp_vec.push_back(p2);
-            if (saturation[p2.second] > sat) {
-                v = p2.second;
-                degree = p2.first;
-                sat = saturation[p2.second];
-            }
-        }
-        for (auto p : temp_vec) {
-            pq.push(p);
-        }
+    for (auto v : vertexes) {
         // Find the first available color that is not in the adjacent nodes
         unordered_set<string> forbiddenColors;
         for (const auto &edge : v->adjacent) {
@@ -607,11 +658,5 @@ void Graph<type>::SDL_coloring() {
         }
 
         v->color = availableColor;
-
-        // Update the saturation of the adjacent nodes
-        for (const auto &edge : v->adjacent) {
-            saturation[edge.to] += 1;
-        }
     }
 }
-

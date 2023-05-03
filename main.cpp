@@ -52,10 +52,13 @@ int main(int argc, char** argv){
         cout << "Graph is not connected." << endl;
     }
     
+    g.printGraph();
+
+
     testCase<string>(g, algo);
     g.printGraphJson(); 
 
-    run_all_algorithms_and_save_timings(g);
+    //run_all_algorithms_and_save_timings(g);
     
     return 0;
 }
@@ -72,7 +75,7 @@ algorithm findAlgorithm(Graph<type> & g, char type1){
         break;
     case 'd':
         cout<<"Dsatur"<<endl;
-        return &Graph<type>::Dsatur_coloring;
+        return &Graph<type>::dsatur_coloring;
         break;
     case 's':
         return &Graph<type>::SDL_coloring;
@@ -80,6 +83,10 @@ algorithm findAlgorithm(Graph<type> & g, char type1){
     case 'w':
         cout<<"Welsh Powell"<<endl;
         return &Graph<type>::welsh_powell_coloring;
+        break;
+    case 'r':
+        cout<<"RLF"<<endl;
+        return &Graph<type>::rlf_coloring;
         break;
     default:
         return &Graph<type>::greedy_coloring;

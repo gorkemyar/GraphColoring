@@ -1,5 +1,5 @@
 Algorithm	Runtime (ms)
-Greedy	0.928794
-Dsatur	1.31751
-SDL	0.908633
-Welsh Powell	0.583845
+Greedy	0.096922
+Dsatur	0.113475
+SDL	0.213423
+Welsh Powell	0.058837

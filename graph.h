@@ -56,9 +56,9 @@ class Graph{
         
         void print_coloring();
         void greedy_coloring();
-        void Dsatur_coloring();
+        void dsatur_coloring();
         void welsh_powell_coloring();
-
+        void rlf_coloring();
         void SDL_coloring();
         //void LDF_coloring();
         
@@ -76,6 +76,7 @@ class Graph{
         unordered_map<string, int> colors;
         node<type>* findNode(type from);
         string generate_random_color_helper();
+        void rlf_coloring_helper(node<type>* n);
         
 };
 #include "graph.cpp"
