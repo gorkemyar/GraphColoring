@@ -143,7 +143,7 @@ template <class type>
 void Graph<type>::printGraphJson(){
     // open output file
     ofstream out;
-    out.open("graph.json");
+    out.open("results/graph.json");
 
     out << "{" << endl;
     out << "\t\"nodes\": {" << endl;

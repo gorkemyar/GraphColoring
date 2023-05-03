@@ -2,7 +2,7 @@
 #include <string>
 #include <chrono>
 #include <fstream>
-#include "graph.h"
+#include "graph/graph.h"
 #include "courses/courses.h"
 #include "iomanip"
 using namespace std;
@@ -124,8 +124,8 @@ void run_all_algorithms_and_save_timings(function<type(int)> random) {
     std::vector<char> algo_types = {'g', 'd', 's', 'w', 'r'};
     std::vector<std::string> algo_names = {"Greedy", "Dsatur", "SDL", "Welsh_Powell", "RLF"};
 
-    std::ofstream outfile("algo_timings.dat");
-    std::ofstream color_out("color_count.dat");
+    std::ofstream outfile("results/algo_timings.dat");
+    std::ofstream color_out("results/color_count.dat");
     Courses courses({"CS", "EE", "MATH", "PHYS", "CHEM", "BIO", "IE", "ME"});
 
     outfile << setw(20)<<"Runtime(ms)";

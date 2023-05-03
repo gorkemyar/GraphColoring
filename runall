@@ -1,4 +1,5 @@
 #!/bin/bash
+
 nodes=$1
 edges=$2
 algo=$3

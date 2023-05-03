@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-file = open('algo_timings.dat', 'r')
+file = open('../results/color_count.dat', 'r')
 lines = file.readlines()
 
 algo_names = []
@@ -43,24 +43,12 @@ for line in lines[1:]:
     data.append(tmp) 
 
 
-
-
-
-# plotting the points
-
 for i in range(algo_count):
     plt.plot(x, [row[i] for row in data], label = algo_names[i])
 
-# naming the x axis
-plt.xlabel('Node Count (Edge Count = Node Count * (Node Count / 7))')
-# naming the y axis
-plt.ylabel('Time (ms)')
-# giving a title to my graph
-plt.title('Time for graph coloring')
-
-# show a legend on the plot
+plt.xlabel('Node Count (Edge Count = Node Count * (Node Count / 7)))')
+plt.ylabel('Color Count')
+plt.title('Color count for graph coloring')
 plt.legend()
+plt.savefig("../results/count.png")
 
-# function to show the plot
-
-plt.savefig("time.png")

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 # Opening JSON file
-f = open('graph.json')
+f = open('results/graph.json')
 adj_list = json.load(f)
 f.close()
 
@@ -16,4 +16,4 @@ color_map = adj_list['colors']
 #print(adj_list['nodes'])
 
 nx.draw(G, with_labels = True, node_color = color_map)
-plt.savefig("result.png")
+plt.savefig("results/result.png")
